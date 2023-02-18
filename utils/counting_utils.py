@@ -29,10 +29,10 @@ def count_ops(circuit, gate_types):
     return op_count
 
 def count_t_depth_of_circuit(circuit):
-    return count_op_depth(circuit, [cirq.ops.T, cirq.ops.T**-1])
+    return count_op_depth(circuit, [cirq.T, cirq.T**-1])
 
 def count_toffoli_depth_of_circuit(circuit):
-    return count_op_depth(circuit, [cirq.ops.TOFFOLI, cirq.ops.TOFFOLI**-1])
+    return count_op_depth(circuit, [cirq.TOFFOLI, cirq.TOFFOLI**-1])
 
 def count_t_of_circuit(circuit):
     return count_ops(circuit, [cirq.T, cirq.T**-1])

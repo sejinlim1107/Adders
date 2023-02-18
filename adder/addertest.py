@@ -65,6 +65,7 @@ def maxsub1(a, b, n, Adder,t=-1):
             circuit.append(cirq.X(A[i]))
         if ((b >> i) & 1 == 1):
             circuit.append(cirq.X(B[i]))
+
     if(t ==-1):
         adder = Adder(A, B)
     else:
@@ -195,7 +196,8 @@ a=0b1
 b=0b0
 
 s = cirq.Simulator()
-circuit=maxsub1(a,b,n, outDraper.Adder)
+#circuit=maxsub1(a,b,n, outDraper.Adder)
+circuit=add(a,b,n, gidney.Adder)
 results = s.simulate(circuit)
 print(circuit)
 output = results.measurements['result']

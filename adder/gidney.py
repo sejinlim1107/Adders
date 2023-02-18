@@ -8,10 +8,9 @@ from cirq import H, CNOT, T, measure, S, CZ, NamedQubit, Circuit, X
 def logical_and(i,t,c):
     yield [H(c)]
     yield [T(c)]
-    yield [CNOT(i,c)]
-    yield [CNOT(t,c)]
+    yield [CNOT(i,c), CNOT(t,c)]
     yield [CNOT(c,i), CNOT(c,t)]
-    yield [(T ** -1)(i), (T ** -1)(t), T(c)]
+    yield cirq.Moment((T ** -1)(i), (T ** -1)(t), T(c))
     yield [CNOT(c,i), CNOT(c,t)]
     yield [H(c)]
     yield [S(c)]
