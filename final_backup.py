@@ -317,7 +317,8 @@ def Adder_Test(eng):
     if (n == 1):
         bit_1_add(eng, k_complement[0:n], s, k_complement[n])
     else:
-        Gidney_no_modular_adder(eng, k_complement[0:n], s, ancilla, k_complement[n], n)
+        Gidney_adder(eng, k, s, ancilla, n)
+        #Gidney_no_modular_adder(eng, k_complement[0:n], s, ancilla, k_complement[n], n)
         #Unb_fan_out_adder(eng, k_complement[0:n], s, k_complement[n], n) # b = b+a (Parallel target)
         #CDKM_no_modular(eng, k_complement[0:n], s, input_carry, k_complement[n], n)
     if (resource_check != 1):
@@ -368,7 +369,16 @@ eng.flush()
 
 #### For Gidney Adder Test####
 eng = MainEngine()
-Adder_Test(eng)
+n = 5 # bit length
+s = eng.allocate_qureg(n)
+k = eng.allocate_qureg(n)
+ancilla = eng.allocate_qureg(n-1)
+if(resource_check != 1):
+    Round_constant_XOR(0b11111, s, n) # s - k
+    Round_constant_XOR(0b10000, k, n)
+Gidney_adder(eng, k, s, ancilla, n)
+print_vecotr(eng,s,n)
+#Adder_Test(eng)
 eng.flush()
 
 print()
@@ -379,7 +389,8 @@ parallel = 1
 
 Resource = ResourceCounter()
 eng = MainEngine(Resource)
-Adder_Test(eng)
+Gidney_adder(eng, k, s, ancilla, n)
+#Adder_Test(eng)
 
 print(Resource)
 eng.flush()

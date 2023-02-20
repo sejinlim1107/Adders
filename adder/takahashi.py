@@ -19,7 +19,10 @@ class Adder:
         else:
             self.ancillae = cirq.NamedQubit("ancilla1")
 
-        self.circuit, self.result = self.construct_circuit()
+        if self.nr_qubits > 1:
+            self.circuit, self.result = self.construct_circuit()
+        else: # 1비트 덧셈
+            self.circuit, self.result = self.construct_circuit1()
 
         '''
         for i in range(self.nr_qubits):
@@ -27,6 +30,18 @@ class Adder:
             self.circuit.append(self.A[i])
         self.circuit.append(self.ancillae)
         '''
+
+    def construct_circuit1(self):
+        circuit = cirq.Circuit()
+        circuit.append(cirq.TOFFOLI(self.A[0], self.B[0], self.ancillae))
+        circuit.append(cirq.CNOT(self.A[0], self.B[0]))
+
+        result = []
+        for k in self.B:
+            result.append(k)
+        result.append(self.ancillae)
+
+        return circuit, result
 
     def construct_circuit(self):
         # The set of CNOTs between Ai and Bi
@@ -38,7 +53,7 @@ class Adder:
         # The set of CNOTs between Ai, Bi and Ai+1
         firs_set_of_toff=[cirq.Moment([cirq.TOFFOLI(self.B[0], self.A[0], self.A[1])])]
 
-        last_set_of_toff=[cirq.Moment([cirq.CNOT(self.A[0], self.B[0])])]
+        last_set_of_CNOTs=[cirq.Moment([cirq.CNOT(self.A[0], self.B[0])])]
 
         single=[]
         for i in range(1, self.nr_qubits-1):
@@ -47,8 +62,8 @@ class Adder:
             firs_set_of_toff.append(cirq.Moment([cirq.TOFFOLI(self.B[i], self.A[i], self.A[i+1])]))
 
             # Constructing the last part of the circuit
-            last_set_of_toff.append(cirq.Moment([cirq.CNOT(self.A[i], self.B[i])]))
-        last_set_of_toff.append(cirq.Moment([cirq.CNOT(self.A[-1], self.B[-1])]))
+            last_set_of_CNOTs.append(cirq.Moment([cirq.CNOT(self.A[i], self.B[i])]))
+        last_set_of_CNOTs.append(cirq.Moment([cirq.CNOT(self.A[-1], self.B[-1])]))
 
         # Adding or removing the N+1st qubit depending on choice
         if self.type:
@@ -69,11 +84,11 @@ class Adder:
             firs_set_of_toff = firs_set_of_toff[::-1]
 
         # Constructing the last part of the circuit
-        last_set_of_toff = last_set_of_toff[::-1]
+        last_set_of_CNOTs = last_set_of_CNOTs[::-1]
         for i in range(len(firs_set_of_toff)):
-            circuit.append(last_set_of_toff[i], strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
+            circuit.append(last_set_of_CNOTs[i], strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
             circuit.append(firs_set_of_toff[i], strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
-        circuit.append(last_set_of_toff[-1], strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
+        circuit.append(last_set_of_CNOTs[-1], strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
         circuit.append(second_set_of_CNOTs, strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
         circuit.append(firs_set_of_CNOTs, strategy=cirq.InsertStrategy.NEW_THEN_INLINE)
 

@@ -1,12 +1,12 @@
 import cirq
+import mathematics
 import utils.counting_utils as cu
+from qramcircuits.toffoli_decomposition import *
 import adder.gidney as gidney
 import adder.cuccaro as cuccaro
 import adder.inDraper as inDraper
 import adder.outDraper as outDraper
 import adder.takahashi as takahashi
-
-
 
 def add(a, b, n, Adder,t=-1):
     A = [cirq.NamedQubit("A" + str(i)) for i in range(n)]
@@ -105,108 +105,28 @@ def maxsub2(a, b, n, Adder,t=-1):
 
     return circuit
 
-'''
-n=7
-a=15
-b=1
-'''
-
-'''
-n=4
-a=0b0000
-b=0b1111
-'''
-
-'''
-s = cirq.Simulator()
-circuit=maxsub1(a,b,n, outFTQCLA.CarryLookaheadAdder, 2)
-results = s.simulate(circuit)
-print(circuit)
-output = results.measurements['result']
-print(output[::-1])
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-'''
-
-'''
-s = cirq.Simulator()
-circuit=maxsub1(a,b,n, gidney.Adder)
-results = s.simulate(circuit)
-output = results.measurements['result']
-print(output[::-1])
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-
-print("")
-circuit=maxsub2(a,b,n, gidney.Adder)
-results = s.simulate(circuit)
-output = results.measurements['result']
-print(output[::-1])
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-'''
-
-'''
-s = cirq.Simulator()
-circuit=maxsub1(a,b,n, cuccaro.Adder)
-results = s.simulate(circuit)
-output = results.measurements['result']
-print(output[::-1])
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-
-print("")
-circuit=maxsub2(a,b,n, cuccaro.Adder)
-results = s.simulate(circuit)
-output = results.measurements['result']
-print(output[::-1]) # numpy 역순 출력
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-'''
-
-n=7
-a=0b1111
-b=0b1111
+n=2
+a=0b11
+b=0b11
 
 s = cirq.Simulator()
-circuit=maxsub2(a,b,n, gidney.Adder)
+circuit=add(a,b,n, gidney.Adder)
+#circuit=maxsub1(a,b,n, gidney.Adder)
 #circuit=add(a,b,n, takahashi.Adder)
+TD_circuit = cirq.Circuit(
+        ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.ZERO_ANCILLA_TDEPTH_3))
 results = s.simulate(circuit)
 #print(circuit)
+#print(TD_circuit)
 output = results.measurements['result']
 print(output[::-1])
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-
+print(f"T_count : {int(cu.count_t_of_circuit(TD_circuit))}")
+print(f"T_depth : {int(cu.count_t_depth_of_circuit(TD_circuit))}")
 '''
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
+print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
+print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
 print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
 print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 '''
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
+print(f"Qubit_count : {int(cirq.num_qubits(TD_circuit))}")
+

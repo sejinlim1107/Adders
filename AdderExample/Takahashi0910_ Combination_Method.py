@@ -25,6 +25,7 @@ def main():
 
     c = TakahashiAdder(nr_qubits, A, B, ancillae=None, type=False).construct_circuit()
     print(c)
+    print(c.moments)
     # Toffoli分解
     ct = cirq.Circuit(
         ToffoliDecomposition.construct_decomposed_moments(c.moments, ToffoliDecompType.ZERO_ANCILLA_TDEPTH_2_COMPUTE))

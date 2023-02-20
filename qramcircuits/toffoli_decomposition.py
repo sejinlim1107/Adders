@@ -248,6 +248,7 @@ class ToffoliDecomposition():
             # in order to have parallel CNOTs
             # moments += encoder[::-1]
             moments += ctu.reverse_moments(encoder)
+
         elif self.decomp_type == ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_B_P:
             # Figure 6 from from arxiv:1303.2042
             # TODO: replace [] with cirq.Moment
@@ -351,7 +352,7 @@ class ToffoliDecomposition():
             ]
 
         elif self.decomp_type == ToffoliDecompType.ZERO_ANCILLA_TDEPTH_2_COMPUTE:
-            # upper part Figure 3 from 1709.06648
+            # upper part Figure 3 from 1709.06648 # Gidney
             moments = [
                 # TODO: H and T in order to emulate T-state initialisation
                 # TODO: Correct depth of circuit, because this will increase by two each time

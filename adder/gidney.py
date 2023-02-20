@@ -41,12 +41,9 @@ class Adder:
 
             else:
                 operations.append([CNOT(C[k-1], self.A[k]), CNOT(C[k-1], self.B[k])])
-                if(k!=n-1):
-                    operations.append(logical_and(self.A[k], self.B[k], C[k]))
-                    operations.append(CNOT(C[k-1], C[k]))
-                else:
-                    operations.append(logical_and(self.A[k], self.B[k], C[-1]))
-                    operations.append(CNOT(C[k-1], C[-1]))
+                operations.append(logical_and(self.A[k], self.B[k], C[k]))
+                operations.append(CNOT(C[k-1], C[k]))
+                if (k == n-1):
                     operations.append(CNOT(C[k-1], self.A[k]))
 
         for k in reversed(range(n-1)):
@@ -86,20 +83,32 @@ def adder_test(a, b, n):
     circuit.append(cirq.measure(adder.result, key='result'))
     return circuit
 
-n = 7
-a = 3
-b = 1
+
+n = 6
+a = 0b111111
+b = 0b111111
+# 101111
 
 s = cirq.Simulator()
 circuit=adder_test(a,b,n)
 
 print('Simulate the circuit:')
 results = s.simulate(circuit)
+print(results.measurements['result'][::-1])
+'''
 
-sum = []
-#sum.append(results.measurements['carry'][0]) # 최상위비트 붙이기
+'''
+n = 6
+a = 0b111111
+b = 0b111111
 
-print(results.measurements['result'])
-#print(results.measurements)
-#print(circuit)
+A = [NamedQubit("A" + str(i)) for i in range(n)]
+B = [NamedQubit("B" + str(i)) for i in range(n)]
+
+
+circuit = Circuit()
+Round_constant_XOR(circuit, a, A, n)  # 숫자, 큐빗, 길이
+Round_constant_XOR(circuit, b, B, n)
+adder, result = Adder(A, B).construct_circuit()
+print(adder.moments) # moments라는 요소는 다 가지고 있는 듯
 '''
