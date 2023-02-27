@@ -198,24 +198,19 @@ def CDKM_no_modular(eng, a, b, c, z, n):
         CNOT | (a[i], b[i])
 
 
-def Gidney_no_modular_adder(eng, a, b, c, carry, n):
+def Gidney_no_modular_adder(eng, a, b, c, n):
 
     for k in range(n):
         if(k == 0):
             logical_and(eng, a[k], b[k], c[k])
 
-        if(k != 0):
+        else:
             CNOT | (c[k-1], a[k])
             CNOT | (c[k-1], b[k])
-            if(k!= n-1):
-                logical_and(eng, a[k], b[k], c[k])
-                CNOT | (c[k-1], c[k])
-            else:
-                logical_and(eng, a[k], b[k], carry)
-                CNOT | (c[k - 1], carry)
-
-        if (k == n-1):
-            CNOT | (c[k-1], a[k])
+            logical_and(eng, a[k], b[k], c[k])
+            CNOT | (c[k-1], c[k])
+            if (k == n-1):
+                CNOT | (c[k-1], a[k])
 
     for k in reversed(range(n-1)):
         if(k==0):

@@ -44,38 +44,40 @@ class Adder:
             init.append(cirq.CNOT(self.A[i], self.B[i]))
 
         # P-round
+        # First moment
         idx = 0  # ancilla idx
-        tmp = 0 # m=1일 때 idx 저장해두기
+        pre = 0 # 이전 t-1일 때의 [1]의 상대적 위치.
         for t in range(1, int(mt.log2(n))):
-            pre = tmp  # (t-1)일 때의 첫번째 자리 저장
             for m in range(1, self.l(n, t)):
-                print('t, m = ',t,m)
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
                     p_round.append(cirq.TOFFOLI(self.B[2*m], self.B[2*m+1], ancilla[idx]))
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     print(pre-1+2*m,pre-1+2*m+1,idx)
                     p_round.append(cirq.TOFFOLI(ancilla[pre-1+2*m], ancilla[pre-1+2*m+1], ancilla[idx]))
+                    print(t, m)
                     # p_round.append(cirq.TOFFOLI(ancilla[idx-self.l(n,t-1)+2*m], ancilla[idx-self.l(n,t-1)+2*m+1], ancilla[idx]))
                     # 이건 절대적 위치 계산한 식임. 이것도 제대로 동작하긴 함.
-                if m==1:
-                    tmp = idx
+                if m == 1: # 여기 위치가 맞음. t==1일 때 이 if문을 통과하면서 저장할 것임. (t-1) for문의 m=1을 저장하는게 목표.
+                    pre = idx
                 idx += 1
 
-
-        print("G라운드 t, m")
         # G-round
-        pre = -1 # 맨처음엔 이전자리가 없으니까
-        idx = -1 # ancilla idx
+        # First moment
+        for i in range(2,n,2):
+            g_round.append(cirq.TOFFOLI(self.Z[i-1], self.B[i-1],self.Z[i]))
+
         for t in range(1, int(mt.log2(n))+1):
             for m in range(self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
-                    print('t=1')
                     g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], self.B[2 * m + 1], self.Z[int(mt.pow(2, t)*(m+1))]))
+                    print(t, m)
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
-                    idx = pre+2*m+1
-                    print(int(mt.pow(2, t)*m + mt.pow(2, t-1)),idx,int(mt.pow(2, t)*(m+1)))
+                    idx = pre+2*m
+                    print(int(mt.pow(2, t) * m + mt.pow(2, t - 1)), idx, int(mt.pow(2, t) * (m + 1)))
                     g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], ancilla[idx], self.Z[int(mt.pow(2, t)*(m+1))]))
-            pre = idx # t-1의 맨마지막
+                    print(t, m)
+            if t > 1:
+                pre = idx+1
 
         print("C라운드 t, m")
         # C-round

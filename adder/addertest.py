@@ -13,11 +13,13 @@ def add(a, b, n, Adder,t=-1):
     B = [cirq.NamedQubit("B" + str(i)) for i in range(n)]
 
     circuit = cirq.Circuit()
-    for i in range(n):
-        if ((a >> i) & 1 == 1):
-            circuit.append(cirq.X(A[i]))
-        if ((b >> i) & 1 == 1):
-            circuit.append(cirq.X(B[i]))
+    if rctr != 1:
+        for i in range(n):
+            if ((a >> i) & 1 == 1):
+                circuit.append(cirq.X(A[i]))
+            if ((b >> i) & 1 == 1):
+                circuit.append(cirq.X(B[i]))
+
     if (t == -1):
         adder = Adder(A, B)
     else:
@@ -25,7 +27,8 @@ def add(a, b, n, Adder,t=-1):
     circuit.append(adder.circuit)
     #circuit.append(cirq.measure(A, key='A'))
     #circuit.append(cirq.measure(B, key='B'))
-    circuit.append(cirq.measure(adder.result, key="result"))
+    if rctr != 1:
+        circuit.append(cirq.measure(adder.result, key="result"))
 
     return circuit
 
@@ -58,11 +61,13 @@ def maxsub1(a, b, n, Adder,t=-1):
 
     circuit = cirq.Circuit()
     circuit.append(cirq.X(A[i]) for i in range(n))
-    for i in range(n):
-        if ((a >> i) & 1 == 1):
-            circuit.append(cirq.X(A[i]))
-        if ((b >> i) & 1 == 1):
-            circuit.append(cirq.X(B[i]))
+
+    if rctr != 1:
+        for i in range(n):
+            if ((a >> i) & 1 == 1):
+                circuit.append(cirq.X(A[i]))
+            if ((b >> i) & 1 == 1):
+                circuit.append(cirq.X(B[i]))
 
     if(t ==-1):
         adder = Adder(A, B)
@@ -73,7 +78,8 @@ def maxsub1(a, b, n, Adder,t=-1):
     circuit.append(cirq.X(adder.result[i]) for i in range(n+1))
     maxancilla = [cirq.NamedQubit("max" + str(i)) for i in range(n+1)]
     circuit.append(cirq.TOFFOLI(adder.result[-1], adder.result[i], maxancilla[i]) for i in range(0,n))
-    circuit.append(cirq.measure(maxancilla, key="result"))
+    if rctr != 1:
+        circuit.append(cirq.measure(maxancilla, key="result"))
 
     return circuit
 
@@ -84,11 +90,12 @@ def maxsub2(a, b, n, Adder,t=-1):
 
     circuit = cirq.Circuit()
     circuit.append(cirq.X(A[i]) for i in range(n))
-    for i in range(n):
-        if ((a >> i) & 1 == 1):
-            circuit.append(cirq.X(A[i]))
-        if ((b >> i) & 1 == 1):
-            circuit.append(cirq.X(B[i]))
+    if rctr != 1:
+        for i in range(n):
+            if ((a >> i) & 1 == 1):
+                circuit.append(cirq.X(A[i]))
+            if ((b >> i) & 1 == 1):
+                circuit.append(cirq.X(B[i]))
     if(t ==-1):
         adder = Adder(A, B)
     else:
@@ -101,7 +108,8 @@ def maxsub2(a, b, n, Adder,t=-1):
     circuit.append(cirq.CNOT(adder.result[-1], ancillas[i]) for i in range(n-1))
     circuit.append(cirq.TOFFOLI(ancillas[i], adder.result[i], maxancilla[i]) for i in range(0,n-1))
     circuit.append(cirq.TOFFOLI(adder.result[-1], adder.result[n-1], maxancilla[n-1]))
-    circuit.append(cirq.measure(maxancilla, key="result"))
+    if rctr != 1:
+        circuit.append(cirq.measure(maxancilla, key="result"))
 
     return circuit
 
@@ -189,24 +197,22 @@ print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
 '''
 
-n=7
-a=0b1111
-b=0b1111
+n=32
+a=0b0000000000
+b=0b1111111111
 
+rctr = 1 # 자원측정 모드
 s = cirq.Simulator()
-circuit=maxsub2(a,b,n, gidney.Adder)
-#circuit=add(a,b,n, takahashi.Adder)
-results = s.simulate(circuit)
+#circuit=maxsub2(a,b,n, gidney.Adder)
+circuit=add(a,b,n, outDraper.Adder)
+#results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
 #print(circuit)
-output = results.measurements['result']
-print(output[::-1])
+#output = results.measurements['result']
+#print(output[::-1])
 print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
 print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-
-'''
 print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
 print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
 print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
 print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-'''
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")

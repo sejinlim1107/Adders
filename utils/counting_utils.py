@@ -1,5 +1,6 @@
 import cirq
 
+
 def count_op_depth(circuit, gate_types):
     op_depth = 0
 
@@ -28,20 +29,37 @@ def count_ops(circuit, gate_types):
 
     return op_count
 
+
 def count_t_depth_of_circuit(circuit):
-    return count_op_depth(circuit, [cirq.T, cirq.T**-1])
+    return count_op_depth(circuit, [cirq.T, cirq.T ** -1])
+
 
 def count_toffoli_depth_of_circuit(circuit):
-    return count_op_depth(circuit, [cirq.TOFFOLI, cirq.TOFFOLI**-1])
+    return count_op_depth(circuit, [cirq.TOFFOLI, cirq.TOFFOLI ** -1])
+
 
 def count_t_of_circuit(circuit):
-    return count_ops(circuit, [cirq.T, cirq.T**-1])
+    return count_ops(circuit, [cirq.T, cirq.T ** -1])
+
 
 def count_h_of_circuit(circuit):
     return count_ops(circuit, [cirq.H])
 
+
 def count_cnot_of_circuit(circuit):
     return count_ops(circuit, [cirq.CNOT])
 
+
 def count_toffoli_of_circuit(circuit):
     return count_ops(circuit, [cirq.TOFFOLI])
+
+
+def count_full_depth_of_circuit(circuit):
+    full_depth = 0
+    for moment in circuit:
+        for operation in moment:
+            if isinstance(operation, cirq.GateOperation):
+                full_depth += 1
+                break
+
+    return full_depth

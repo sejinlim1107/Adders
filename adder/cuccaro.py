@@ -19,7 +19,7 @@ class Adder:
 
         self.qubit_c = cirq.NamedQubit("c0")
         self.qubit_z = cirq.NamedQubit("z0")
-        self.qubits_d = [cirq.NamedQubit("d" + str(i)) for i in range(self.nr_qubits)]
+        #self.qubits_d = [cirq.NamedQubit("d" + str(i)) for i in range(self.nr_qubits)]
 
         '''
         self._qubit_order.append(self.qubit_c)

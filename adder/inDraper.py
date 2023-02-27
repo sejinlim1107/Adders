@@ -41,8 +41,12 @@ class Adder:
         # Init round
         for i in range(n):
             init.append(cirq.TOFFOLI(self.A[i], self.B[i], ancilla1[i])) # ancilla1[0] == Z[1]
+            print("1번")
+            print(i)
         for i in range(n):
             init.append(cirq.CNOT(self.A[i], self.B[i]))
+            print("2번")
+            print(i)
 
         # P-round
         # First moment
@@ -53,8 +57,11 @@ class Adder:
             for m in range(1, self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
                     p_round.append(cirq.TOFFOLI(self.B[2*m], self.B[2*m+1], ancilla2[idx]))
+                    print("P라운드 t, m")
+                    print(t,m)
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     p_round.append(cirq.TOFFOLI(ancilla2[pre-1+2*m], ancilla2[pre-1+2*m+1], ancilla2[idx]))
+                    print(t,m)
                     # p_round.append(cirq.TOFFOLI(ancilla[idx-self.l(n,t-1)+2*m], ancilla[idx-self.l(n,t-1)+2*m+1], ancilla[idx]))
                     # 이건 절대적 위치 계산한 식임. 이것도 제대로 동작하긴 함.
                 if m == 1: # 여기 위치가 맞음. t==1일 때 이 if문을 통과하면서 저장할 것임. (t-1) for문의 m=1을 저장하는게 목표.
@@ -81,10 +88,13 @@ class Adder:
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
                     #print(int(mt.pow(2, t)*m + mt.pow(2, t-1)-1),2 * m + 1,int(mt.pow(2, t)*(m+1))-1)
                     g_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t)*m + mt.pow(2, t-1))-1], self.B[2 * m + 1], ancilla1[int(mt.pow(2, t)*(m+1))-1]))
+                    print("G라운드 t, m")
+                    print(t, m)
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     idx = pre-1+2*m+1
                     #print(int(mt.pow(2, t)*m + mt.pow(2, t-1))-1,idx,int(mt.pow(2, t)*(m+1))-1)
                     g_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t)*m + mt.pow(2, t-1))-1], ancilla2[idx], ancilla1[int(mt.pow(2, t)*(m+1))-1]))
+                    print(t, m)
             if t > 1:
                 pre = idx+1
 
@@ -109,7 +119,8 @@ class Adder:
                     c_round.append(
                         cirq.TOFFOLI(ancilla1[int(mt.pow(2, t) * m)-1], self.B[2 * m], ancilla1[int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1]))
                 else:
-                    c_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t) * m)-1], ancilla2[len(ancilla2)-1-self.l(n,t)-1+2*m],ancilla1[int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1]))
+                    #print(int(mt.pow(2, t) * m)-1,len(ancilla2)-1-self.l(n,t)-1+2*m,int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1)
+                    c_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t) * m)-1], ancilla2[len(ancilla2)-2-self.l(n,t)-1+2*m],ancilla1[int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1]))
 
             # uncomp part
             if self.l((n-pow(2,t-1)), t) == self.l(((n-1)-pow(2,t-1)), t):
