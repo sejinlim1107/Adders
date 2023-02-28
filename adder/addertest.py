@@ -197,14 +197,14 @@ print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
 '''
 
-n=32
+n=1000
 a=0b0000000000
 b=0b1111111111
 
 rctr = 1 # 자원측정 모드
 s = cirq.Simulator()
 #circuit=maxsub2(a,b,n, gidney.Adder)
-circuit=add(a,b,n, outDraper.Adder)
+circuit=add(a,b,n, inDraper.Adder)
 #results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
 #print(circuit)
 #output = results.measurements['result']

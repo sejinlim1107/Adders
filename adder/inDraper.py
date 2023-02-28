@@ -41,94 +41,81 @@ class Adder:
         # Init round
         for i in range(n):
             init.append(cirq.TOFFOLI(self.A[i], self.B[i], ancilla1[i])) # ancilla1[0] == Z[1]
-            print("1번")
-            print(i)
         for i in range(n):
             init.append(cirq.CNOT(self.A[i], self.B[i]))
-            print("2번")
-            print(i)
 
         # P-round
-        # First moment
         idx = 0  # ancilla idx
-        pre = 0 # 이전 t-1일 때의 [1]의 상대적 위치.
-        tmp = 0 # (n-1) adder일 때 배열 끊는 기준
+        tmp = 0 # m=1일 때 idx 저장해두기
+        pivot = 0 # (n-1) adder일 때 배열 끊는 기준
         for t in range(1, int(mt.log2(n))):
+            pre = tmp  # (t-1)일 때의 첫번째 자리 저장
             for m in range(1, self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
                     p_round.append(cirq.TOFFOLI(self.B[2*m], self.B[2*m+1], ancilla2[idx]))
-                    print("P라운드 t, m")
-                    print(t,m)
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     p_round.append(cirq.TOFFOLI(ancilla2[pre-1+2*m], ancilla2[pre-1+2*m+1], ancilla2[idx]))
-                    print(t,m)
                     # p_round.append(cirq.TOFFOLI(ancilla[idx-self.l(n,t-1)+2*m], ancilla[idx-self.l(n,t-1)+2*m+1], ancilla[idx]))
                     # 이건 절대적 위치 계산한 식임. 이것도 제대로 동작하긴 함.
-                if m == 1: # 여기 위치가 맞음. t==1일 때 이 if문을 통과하면서 저장할 것임. (t-1) for문의 m=1을 저장하는게 목표.
-                    pre = idx
+                if m == 1:
+                    tmp = idx
                 idx += 1
 
             # uncomp part
             if self.l(n, t) == self.l(n - 1, t):
-                p_round_uncomp += p_round[tmp:]
-                tmp = len(p_round)
+                p_round_uncomp += p_round[pivot:]
+                pivot = len(p_round)
             else:
-                p_round_uncomp += p_round[tmp:-1]
-                tmp = len(p_round)
+                p_round_uncomp += p_round[pivot:-1]
+                pivot = len(p_round)
 
         if n!=1 and int(mt.log2(n)) != int(mt.log2(n-1)):
             p_round_uncomp = p_round_uncomp[:-(self.l(n, int(mt.log2(n))-1)-1)] # 잘못 추가된거 삭제
 
         # G-round
-        # First moment
-        pre = 0
-        tmp = 0
+        pre = -1  # 맨처음엔 이전자리가 없으니까
+        idx = -1  # ancilla idx
+        pivot = 0
         for t in range(1, int(mt.log2(n))+1):
             for m in range(self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
-                    #print(int(mt.pow(2, t)*m + mt.pow(2, t-1)-1),2 * m + 1,int(mt.pow(2, t)*(m+1))-1)
                     g_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t)*m + mt.pow(2, t-1))-1], self.B[2 * m + 1], ancilla1[int(mt.pow(2, t)*(m+1))-1]))
-                    print("G라운드 t, m")
-                    print(t, m)
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
-                    idx = pre-1+2*m+1
-                    #print(int(mt.pow(2, t)*m + mt.pow(2, t-1))-1,idx,int(mt.pow(2, t)*(m+1))-1)
+                    idx = pre+2*m+1
                     g_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t)*m + mt.pow(2, t-1))-1], ancilla2[idx], ancilla1[int(mt.pow(2, t)*(m+1))-1]))
                     print(t, m)
-            if t > 1:
-                pre = idx+1
+            pre = idx # t-1의 맨마지막
 
             # uncomp part
             if self.l(n, t) == self.l(n - 1, t):
-                g_round_uncomp += g_round[tmp:]
-                tmp = len(g_round)
+                g_round_uncomp += g_round[pivot:]
+                pivot = len(g_round)
             else:
-                g_round_uncomp += g_round[tmp:-1]
-                tmp = len(g_round)
+                g_round_uncomp += g_round[pivot:-1]
+                pivot = len(g_round)
 
         if n!=1 and int(mt.log2(n)) != int(mt.log2(n - 1)):
             g_round_uncomp = g_round_uncomp[:-(self.l(n, int(mt.log2(n))) - 1)]  # 잘못 추가된거 삭제
 
         # C-round
-        # First moment of C-round
         # 이거 순서대로 담고 마지막에 뒤집어도 될 듯
-        tmp = 0
+        pivot = 0
         for t in range(int(mt.log2(2*n/3)),0,-1):
+            idx = len(ancilla2) - 1 - (self.l((n - pow(2, t - 1)), t) + self.l((n - pow(2, t - 2)),t - 1))  # 현재 접근하고자하는 P의 시작 index -1.
             for m in range(1,self.l((n-pow(2,t-1)), t)+1):
                 if t == 1:  # B에 저장되어있는 애들로만 연산 가능
                     c_round.append(
                         cirq.TOFFOLI(ancilla1[int(mt.pow(2, t) * m)-1], self.B[2 * m], ancilla1[int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1]))
                 else:
-                    #print(int(mt.pow(2, t) * m)-1,len(ancilla2)-1-self.l(n,t)-1+2*m,int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1)
-                    c_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t) * m)-1], ancilla2[len(ancilla2)-2-self.l(n,t)-1+2*m],ancilla1[int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1]))
+                    c_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t) * m)-1], ancilla2[idx+2*m],ancilla1[int(mt.pow(2, t) * m + mt.pow(2, t - 1))-1]))
 
             # uncomp part
             if self.l((n-pow(2,t-1)), t) == self.l(((n-1)-pow(2,t-1)), t):
-                c_round_uncomp += c_round[tmp:]
-                tmp = len(c_round)
+                c_round_uncomp += c_round[pivot:]
+                pivot = len(c_round)
             else:
-                c_round_uncomp += c_round[tmp:-1]
-                tmp = len(c_round)
+                c_round_uncomp += c_round[pivot:-1]
+                pivot = len(c_round)
 
         t = int(mt.log2(2*n/3))
         if n!=1 and int(mt.log2(2*n/3)) != int(mt.log2(2*(n-1)/3)):

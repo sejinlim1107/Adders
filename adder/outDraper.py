@@ -49,11 +49,9 @@ class Adder:
         for t in range(1, int(mt.log2(n))):
             pre = tmp  # (t-1)일 때의 첫번째 자리 저장
             for m in range(1, self.l(n, t)):
-                print('t, m = ',t,m)
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
                     p_round.append(cirq.TOFFOLI(self.B[2*m], self.B[2*m+1], ancilla[idx]))
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
-                    print(pre-1+2*m,pre-1+2*m+1,idx)
                     p_round.append(cirq.TOFFOLI(ancilla[pre-1+2*m], ancilla[pre-1+2*m+1], ancilla[idx]))
                     # p_round.append(cirq.TOFFOLI(ancilla[idx-self.l(n,t-1)+2*m], ancilla[idx-self.l(n,t-1)+2*m+1], ancilla[idx]))
                     # 이건 절대적 위치 계산한 식임. 이것도 제대로 동작하긴 함.
@@ -62,34 +60,29 @@ class Adder:
                 idx += 1
 
 
-        print("G라운드 t, m")
         # G-round
         pre = -1 # 맨처음엔 이전자리가 없으니까
         idx = -1 # ancilla idx
         for t in range(1, int(mt.log2(n))+1):
             for m in range(self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
-                    print('t=1')
                     g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], self.B[2 * m + 1], self.Z[int(mt.pow(2, t)*(m+1))]))
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     idx = pre+2*m+1
-                    print(int(mt.pow(2, t)*m + mt.pow(2, t-1)),idx,int(mt.pow(2, t)*(m+1)))
                     g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], ancilla[idx], self.Z[int(mt.pow(2, t)*(m+1))]))
             pre = idx # t-1의 맨마지막
 
-        print("C라운드 t, m")
         # C-round
-        # First moment of C-round
         # 이거 순서대로 담고 마지막에 뒤집어도 될 듯
         for t in range(int(mt.log2(2*n/3)),0,-1):
+            idx = len(ancilla) - 1 - (self.l((n - pow(2, t - 1)), t) + self.l((n - pow(2, t - 2)),t - 1))  # 현재 접근하고자하는 P의 시작 index -1.
             for m in range(1,self.l((n-pow(2,t-1)), t)+1):
                 if t == 1:  # B에 저장되어있는 애들로만 연산 가능
                     c_round.append(
                         cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], self.B[2 * m], self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
-                    print(t, m)
                 else:
-                    c_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], ancilla[len(ancilla)-2-self.l(n,t)-1+2*m],self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
-                    print(t, m)
+                    c_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], ancilla[idx+2*m],self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
+
 
         # Last round
         last_round = [cirq.CNOT(self.B[i], self.Z[i]) for i in range(n)]
