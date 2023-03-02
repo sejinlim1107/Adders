@@ -4,7 +4,8 @@ import math as mt
 def w(n):
     return n - sum(int(mt.floor(n / (mt.pow(2, i)))) for i in range(1, int(mt.log2(n)) + 1))
 
-n = 10
+n = 4
+print(n-w(n)-mt.floor(mt.log2(n)))
 
 print(70*n-21*w(n)-21*w(n-1)-21*int(mt.log2(n))-21*int(mt.log2(n-1))-49)
 print(10*n-6*int(mt.log2(n))-13)
