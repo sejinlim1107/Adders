@@ -94,6 +94,7 @@ def Gidney_no_modular_adder(eng, a, b, c, n):
     for k in range(n):
         CNOT | (a[k], b[k])
 
+
 def Gidney_adder(eng, a, b, c, n): # <= 6-bit only (Do not use now)
     for k in range(n-1):
         if(k == 0):

@@ -83,7 +83,6 @@ class Adder:
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     idx = pre+2*m+1
                     g_round.append(cirq.TOFFOLI(ancilla1[int(mt.pow(2, t)*m + mt.pow(2, t-1))-1], ancilla2[idx], ancilla1[int(mt.pow(2, t)*(m+1))-1]))
-                    print(t, m)
             pre = idx # t-1의 맨마지막
 
             # uncomp part

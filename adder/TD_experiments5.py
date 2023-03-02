@@ -127,7 +127,7 @@ for nnn in range(2,11):
         ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE))
     #results = s.simulate(circuit)
     #print(circuit)
-    #print(TD_circuit)
+    print(TD_circuit)
     #output = results.measurements['result']
     #print(output[::-1])
     print(f"{int(cu.count_t_of_circuit(TD_circuit))},{int(cu.count_t_depth_of_circuit(TD_circuit))},{int(cirq.num_qubits(TD_circuit))},{int(cu.count_full_depth_of_circuit(TD_circuit))}")

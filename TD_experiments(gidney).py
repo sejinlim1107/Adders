@@ -113,31 +113,38 @@ def maxsub2(a, b, n, Adder,t=-1):
 
     return circuit
 
+'''
+ZERO_ANCILLA_TDEPTH_3
+ONE_ANCILLA_TDEPTH_2
+FOUR_ANCILLA_TDEPTH_1_A
+FOUR_ANCILLA_TDEPTH_1_B
+FOUR_ANCILLA_TDEPTH_1_COMPUTE
+'''
+
 rctr = 1
-n=10
-a=0b0000000000
-b=0b1111111111
 
-s = cirq.Simulator()
-circuit=add(a,b,n, inDraper.Adder)
-#circuit=maxsub1(a,b,n, gidney.Adder)
-#circuit=add(a,b,n, takahashi.Adder)
-#TD_circuit = cirq.Circuit(
-#        ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.ZERO_ANCILLA_TDEPTH_3))
-#results = s.simulate(circuit)
-#print(circuit)
-print(circuit)
-#output = results.measurements['result']
-#print(output[::-1])
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-print(f"Full_depth : {int(cu.count_full_depth_of_circuit(circuit))}")
+for nnn in range(2,11):
+    n=nnn
+    a=0b0000000000
+    b=0b1111111111
 
-'''
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-'''
+    s = cirq.Simulator()
+    circuit=maxsub1(a,b,n, gidney.Adder)
+    #circuit=maxsub1(a,b,n, gidney.Adder)
+    #circuit=add(a,b,n, takahashi.Adder)
+    TD_circuit = cirq.Circuit(
+            ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE))
+    #results = s.simulate(circuit)
+    #print(TD_circuit)
+    #print(circuit)
+    #output = results.measurements['result']
+    #print(output[::-1])
+    print(str(int(cu.count_t_of_circuit(TD_circuit)))+","+str(int(cu.count_t_depth_of_circuit(TD_circuit)))+","+str(int(cirq.num_qubits(TD_circuit)))+","+str(int(cu.count_full_depth_of_circuit(TD_circuit))))
+
+    '''
+    print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
+    print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
+    print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
+    print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
+    '''
 

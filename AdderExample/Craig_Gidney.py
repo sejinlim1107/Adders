@@ -34,7 +34,7 @@ def Craig_Gidney_adder(nr_qubits,c0,aaa,bbb):
     #分解后电路
     ct_pic=ct.to_text_diagram(use_unicode_characters=False,
                                           qubit_order =qubit_order)
-    print(ct_pic)
+    #print(ct_pic)
     print(ct)
     #T-count、T-depth、Qubit-count、CNOT-count
     print("分解前电路") #분해 전 회로
@@ -51,7 +51,7 @@ def Craig_Gidney_adder(nr_qubits,c0,aaa,bbb):
     print(f"Full_depth : {int(count_full_depth_of_circuit(ct))}")
 
     #'''
-
+'''
     #print("calculate,由低到高:")
     initial_state = str(c0)
     for i in range(nr_qubits):
@@ -68,7 +68,7 @@ def Craig_Gidney_adder(nr_qubits,c0,aaa,bbb):
     for i in range(nr_qubits):
         real_result=real_result+result[2+i*3]
     return real_result
-
+'''
 
 if __name__ == "__main__":
     result = Craig_Gidney_adder(nr_qubits=4,c0=0, aaa="1000", bbb="1000")

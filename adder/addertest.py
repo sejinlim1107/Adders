@@ -197,7 +197,7 @@ print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
 '''
 
-n=1000
+n=1
 a=0b0000000000
 b=0b1111111111
 
