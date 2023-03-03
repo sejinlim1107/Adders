@@ -252,9 +252,9 @@ def Gidney_adder(eng, a, b, c, n): # <= 6-bit only (Do not use now)
         CNOT | (a[k], b[k])
 
 def Inc_func_no_reverse(eng, ancilla, v, n):
-    #Toffoli_gate(eng, v[0], v[1], ancilla[0])
-    #for i in range(n-3):
-    #    Toffoli_gate(eng, ancilla[i], v[i+2], ancilla[i+1])
+    Toffoli_gate(eng, v[0], v[1], ancilla[0])
+    for i in range(n-3):
+        Toffoli_gate(eng, ancilla[i], v[i+2], ancilla[i+1])
     CNOT | (v[0], v[1])
     for i in range(n-2):
         CNOT | (ancilla[i], v[i+2])
@@ -325,16 +325,16 @@ def Adder_Test(eng):
         result = eng.allocate_qureg(n)
 
         if(parallel == 1):
-            print('prepairing')
+            #print('prepairing')
             ancillas = eng.allocate_qureg(n-1)
             for i in range(n-1):
                 CNOT | (k_complement[n], ancillas[i])
-            #for i in range(n-1):
-            #    Toffoli_gate(eng, ancillas[i], s[i], result[i])
-            #Toffoli_gate(eng, k_complement[n], s[n-1], result[n-1])
-        #else:
-        #    for i in range(n):
-        #        Toffoli_gate(eng, k_complement[n], s[i], result[i])
+            for i in range(n-1):
+                Toffoli_gate(eng, ancillas[i], s[i], result[i])
+            Toffoli_gate(eng, k_complement[n], s[n-1], result[n-1])
+        else:
+            for i in range(n):
+                Toffoli_gate(eng, k_complement[n], s[i], result[i])
 
         if (resource_check != 1):
             print('Max value : ', end='')

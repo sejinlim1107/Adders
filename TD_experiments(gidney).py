@@ -123,28 +123,46 @@ FOUR_ANCILLA_TDEPTH_1_COMPUTE
 
 rctr = 1
 
-for nnn in range(2,11):
-    n=nnn
-    a=0b0000000000
-    b=0b1111111111
+n=4
+a=0b0000000000
+b=0b1111111111
 
-    s = cirq.Simulator()
-    circuit=maxsub1(a,b,n, gidney.Adder)
-    #circuit=maxsub1(a,b,n, gidney.Adder)
-    #circuit=add(a,b,n, takahashi.Adder)
-    TD_circuit = cirq.Circuit(
-            ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE))
-    #results = s.simulate(circuit)
-    #print(TD_circuit)
-    #print(circuit)
-    #output = results.measurements['result']
-    #print(output[::-1])
-    print(str(int(cu.count_t_of_circuit(TD_circuit)))+","+str(int(cu.count_t_depth_of_circuit(TD_circuit)))+","+str(int(cirq.num_qubits(TD_circuit)))+","+str(int(cu.count_full_depth_of_circuit(TD_circuit))))
+s = cirq.Simulator()
+TD_circuit=add(a,b,n, gidney.Adder)
+#circuit=maxsub1(a,b,n, gidney.Adder)
+#circuit=add(a,b,n, takahashi.Adder)
+#TD_circuit = cirq.Circuit(
+#        ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE))
+#results = s.simulate(circuit)
+print(TD_circuit)
+#print(circuit)
+#output = results.measurements['result']
+#print(output[::-1])
+print(str(int(cu.count_t_of_circuit(TD_circuit)))+","+str(int(cu.count_t_depth_of_circuit(TD_circuit)))+","+str(int(cirq.num_qubits(TD_circuit)))+","+str(int(cu.count_full_depth_of_circuit(TD_circuit))))
 
-    '''
-    print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
-    print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
-    print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-    print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-    '''
+
+# for nnn in range(2,11):
+#     n=nnn
+#     a=0b0000000000
+#     b=0b1111111111
+#
+#     s = cirq.Simulator()
+#     circuit=maxsub1(a,b,n, gidney.Adder)
+#     #circuit=maxsub1(a,b,n, gidney.Adder)
+#     #circuit=add(a,b,n, takahashi.Adder)
+#     TD_circuit = cirq.Circuit(
+#             ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE))
+#     #results = s.simulate(circuit)
+#     #print(TD_circuit)
+#     #print(circuit)
+#     #output = results.measurements['result']
+#     #print(output[::-1])
+#     print(str(int(cu.count_t_of_circuit(TD_circuit)))+","+str(int(cu.count_t_depth_of_circuit(TD_circuit)))+","+str(int(cirq.num_qubits(TD_circuit)))+","+str(int(cu.count_full_depth_of_circuit(TD_circuit))))
+
+'''
+print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
+print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
+print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
+print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
+'''
 
