@@ -121,24 +121,24 @@ FOUR_ANCILLA_TDEPTH_1_B
 FOUR_ANCILLA_TDEPTH_1_COMPUTE
 '''
 
-rctr = 1
+rctr = 0
 
 n=4
-a=0b0000000000
-b=0b1111111111
+a=0b1010
+b=0b0101
 
 s = cirq.Simulator()
-TD_circuit=add(a,b,n, gidney.Adder)
+TD_circuit=maxsub2(a,b,n, gidney.Adder)
 #circuit=maxsub1(a,b,n, gidney.Adder)
 #circuit=add(a,b,n, takahashi.Adder)
 #TD_circuit = cirq.Circuit(
 #        ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE))
-#results = s.simulate(circuit)
+results = s.simulate(TD_circuit)
 print(TD_circuit)
 #print(circuit)
-#output = results.measurements['result']
-#print(output[::-1])
-print(str(int(cu.count_t_of_circuit(TD_circuit)))+","+str(int(cu.count_t_depth_of_circuit(TD_circuit)))+","+str(int(cirq.num_qubits(TD_circuit)))+","+str(int(cu.count_full_depth_of_circuit(TD_circuit))))
+output = results.measurements['result']
+print(output[::-1])
+#print(str(int(cu.count_t_of_circuit(TD_circuit)))+","+str(int(cu.count_t_depth_of_circuit(TD_circuit)))+","+str(int(cirq.num_qubits(TD_circuit)))+","+str(int(cu.count_full_depth_of_circuit(TD_circuit))))
 
 
 # for nnn in range(2,11):

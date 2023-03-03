@@ -1,5 +1,7 @@
 from enum import Enum, auto
 
+import cirq
+
 from utils.counting_utils import *
 import utils.clifford_t_utils as ctu
 
@@ -356,8 +358,8 @@ class ToffoliDecomposition():
             moments = [
                 # TODO: H and T in order to emulate T-state initialisation
                 # TODO: Correct depth of circuit, because this will increase by two each time
-                cirq.Moment([cirq.H.on(self.qubits[2])]),
-                cirq.Moment([cirq.T.on(self.qubits[2])]),
+                cirq.H.on(self.qubits[2]),
+                cirq.T.on(self.qubits[2]),
                 cirq.Moment([cirq.CNOT.on(self.qubits[0], self.qubits[2])]),
                 cirq.Moment([cirq.CNOT.on(self.qubits[1], self.qubits[2])]),
                 # TODO: Replace following two with single control -multiple target CNOT
@@ -381,10 +383,11 @@ class ToffoliDecomposition():
             # Measurements are implicit, and we assume worst case where all
             # the CZ have to be implemented
             moments = [
-                cirq.Moment([cirq.H.on(self.qubits[2]), cirq.H.on(self.qubits[0])]),
-                cirq.Moment([cirq.CX.on(self.qubits[1], self.qubits[0])]),
-                cirq.Moment([cirq.H.on(self.qubits[0])]),
+                cirq.Moment([cirq.H(self.qubits[2])]),
+                cirq.measure(self.qubits[2], key=self.qubits[2].name),
+                cirq.Moment(cirq.CZ(self.qubits[0],self.qubits[1]).with_classical_controls(self.qubits[2].name))
             ]
+
         elif self.decomp_type == ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_COMPUTE:
             # Figure 3 from https://arxiv.org/pdf/1212.5069.pdf
             # Figure 6 from from arxiv:1303.2042

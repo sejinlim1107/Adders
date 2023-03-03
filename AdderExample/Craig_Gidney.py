@@ -34,8 +34,8 @@ def Craig_Gidney_adder(nr_qubits,c0,aaa,bbb):
     #分解后电路
     ct_pic=ct.to_text_diagram(use_unicode_characters=False,
                                           qubit_order =qubit_order)
-    #print(ct_pic)
-    print(ct)
+    print(ct_pic)
+    #print(ct)
     #T-count、T-depth、Qubit-count、CNOT-count
     print("分解前电路") #분해 전 회로
     print("T-depth= ", count_t_depth_of_circuit(c))
