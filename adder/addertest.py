@@ -197,7 +197,7 @@ print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
 '''
 
-n=1
+n=10
 a=0b0000000000
 b=0b1111111111
 
@@ -206,7 +206,7 @@ s = cirq.Simulator()
 #circuit=maxsub2(a,b,n, gidney.Adder)
 circuit=add(a,b,n, inDraper.Adder)
 #results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
-#print(circuit)
+print(circuit)
 #output = results.measurements['result']
 #print(output[::-1])
 print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
@@ -216,3 +216,5 @@ print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
 print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
 print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
+print(f"Full_depth : {int(cu.count_full_depth_of_circuit(circuit))}")
+

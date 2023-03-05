@@ -4,8 +4,12 @@ import math as mt
 def w(n):
     return n - sum(int(mt.floor(n / (mt.pow(2, i)))) for i in range(1, int(mt.log2(n)) + 1))
 
-n = 4
-print(n-w(n)-mt.floor(mt.log2(n)))
+n = 10
+print(int(mt.log2(n))+int(mt.log2(n-1))+int(mt.log2(n/3))+int(mt.log2((n-1)/3))+14)
+print(10*n-3*w(n)-3*w(n-1)-3*int(mt.log2(n))-3*int(mt.log2(n-1))-7)
+print(2*n-w(n)-int(mt.log2(n))-1)
+print(int(mt.log2(n))+int(mt.log2(n/3))+7)
+print(5*n-3*w(n)-3*mt.floor(mt.log2(n))-1)
 
 print(70*n-21*w(n)-21*w(n-1)-21*int(mt.log2(n))-21*int(mt.log2(n-1))-49)
 print(10*n-6*int(mt.log2(n))-13)

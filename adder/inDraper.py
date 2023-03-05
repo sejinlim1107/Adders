@@ -136,31 +136,32 @@ class Adder:
           Computation part of the circuit
         """
         init_comp, p_round_comp, g_round_comp, c_round_comp, last_round, p_round_uncomp, g_round_uncomp, c_round_uncomp, ancilla = self.construct_rounds()
+        circuit = cirq.Circuit()
         # Init
-        circuit = cirq.Circuit(init_comp)
+        circuit += init_comp
 
         # P-round
-        circuit += cirq.Circuit(p_round_comp)
+        circuit += p_round_comp
 
         # G-round
-        circuit += cirq.Circuit(g_round_comp)
+        circuit += g_round_comp
 
         # C-round
-        circuit += cirq.Circuit(c_round_comp)
+        circuit += c_round_comp
 
         # P-inverse
-        circuit += cirq.Circuit(p_round_comp[::-1])
+        circuit += p_round_comp[::-1]
 
         # Last round
-        circuit += cirq.Circuit(last_round)
+        circuit += last_round
 
         ### Step7. Section3 in reverse. (n-1)bit adder ###
         n = len(self.A)
 
-        circuit += cirq.Circuit(p_round_uncomp)
-        circuit += cirq.Circuit(c_round_uncomp[::-1])
-        circuit += cirq.Circuit(g_round_uncomp[::-1])
-        circuit += cirq.Circuit(p_round_uncomp[::-1])
+        circuit += p_round_uncomp
+        circuit += c_round_uncomp[::-1]
+        circuit += g_round_uncomp[::-1]
+        circuit += p_round_uncomp[::-1]
 
         '''
         ### Step7. Section3 in reverse. (n-1)bit adder ###

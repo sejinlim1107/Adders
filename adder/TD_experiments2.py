@@ -132,4 +132,4 @@ for nnn in range(2,11):
     print(f"{int(cu.count_t_of_circuit(TD_circuit))},{int(cu.count_t_depth_of_circuit(TD_circuit))},{int(cirq.num_qubits(TD_circuit))},{int(cu.count_full_depth_of_circuit(TD_circuit))}")
     #print(f"T_depth : ")
     #print(f"Qubit_count : ")
-    #print(f"Full_depth : ")
+    #print(f"Full_depth : {int(cu.count_full_depth_of_circuit(TD_circuit))}")
