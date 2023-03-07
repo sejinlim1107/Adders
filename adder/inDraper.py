@@ -136,7 +136,7 @@ class Adder:
           Computation part of the circuit
         """
         init_comp, p_round_comp, g_round_comp, c_round_comp, last_round, p_round_uncomp, g_round_uncomp, c_round_uncomp, ancilla = self.construct_rounds()
-        circuit = cirq.Circuit()
+        circuit = [] #cirq.Circuit()
         # Init
         circuit += init_comp
 

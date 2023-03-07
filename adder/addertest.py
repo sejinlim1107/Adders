@@ -83,7 +83,7 @@ def maxsub1(a, b, n, Adder,t=-1):
 
     return circuit
 
-def maxsub2(a, b, n, Adder,t=-1):
+def maxsub2(a, b, n, Adder,t=-1): # T-depth 줄이기
 
     A = [cirq.NamedQubit("A" + str(i)) for i in range(n)]
     B = [cirq.NamedQubit("B" + str(i)) for i in range(n)]
@@ -197,18 +197,18 @@ print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
 print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
 '''
 
-n=10
-a=0b0000000000
-b=0b1111111111
+n=1
+a=0b1
+b=0b1
 
-rctr = 1 # 자원측정 모드
+rctr = 0 # 자원측정 모드
 s = cirq.Simulator()
 #circuit=maxsub2(a,b,n, gidney.Adder)
-circuit=add(a,b,n, inDraper.Adder)
-#results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
+circuit=add(a,b,n, takahashi.Adder)
+results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
 print(circuit)
-#output = results.measurements['result']
-#print(output[::-1])
+output = results.measurements['result']
+print(output[::-1])
 print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
 print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
 print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")

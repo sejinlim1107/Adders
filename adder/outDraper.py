@@ -101,7 +101,7 @@ class Adder:
         """
         init_comp, p_round_comp, g_round_comp, c_round_comp, last_round = self.construct_rounds()
 
-        circuit = cirq.Circuit()
+        circuit = [] #cirq.Circuit()
 
         # Init
         circuit += init_comp

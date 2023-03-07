@@ -251,7 +251,7 @@ def Gidney_adder(eng, a, b, c, n): # <= 6-bit only (Do not use now)
     for k in range(n):
         CNOT | (a[k], b[k])
 
-def Inc_func_no_reverse(eng, ancilla, v, n):
+def Inc_func_no_reverse(eng, ancilla, v, n): # ancilla <- constant1 (n-1)-bit
     Toffoli_gate(eng, v[0], v[1], ancilla[0])
     for i in range(n-3):
         Toffoli_gate(eng, ancilla[i], v[i+2], ancilla[i+1])

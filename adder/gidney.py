@@ -4,6 +4,7 @@ import cirq
 from cirq import H, CNOT, T, measure, S, CZ, NamedQubit, Circuit, X
 
 #Gidney Adder
+#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
 
 def logical_and(i,t,c):
     yield [H(c)] #cirq.Moment([H(c)])
@@ -56,8 +57,8 @@ class Adder:
 
         operations.append(CNOT(self.A[k], self.B[k]) for k in range(n))
 
-        circuit = cirq.Circuit()
-        circuit.append(operations)
+        #circuit = cirq.Circuit()
+        #circuit.append(operations)
 
         # measure
         #circuit.append(measure(self.carry,key='carry'))
@@ -67,7 +68,7 @@ class Adder:
         result.append(C[-1])
         #circuit.append(measure(result, key='result'))
 
-        return circuit, result
+        return operations, result
 
 '''
 def adder_test(a, b, n):
