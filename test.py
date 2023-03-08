@@ -126,6 +126,23 @@ def print_vecotr(eng, element, length):
         print(int(element[length - 1 - k]), end='')
     print()
 
+def Unb_fan_out_adder(eng, a, b, carry, n):
+    for i in range(1, n):
+        CNOT | (a[i], b[i])
+    CNOT | (a[n-1], carry)
+    for i in range(n-2, 0, -1):
+        CNOT | (a[i], a[i+1])
+    for i in range(n-1):
+        Toffoli_gate(eng, b[i], a[i], a[i+1])
+    Toffoli_gate(eng, b[n-1], a[n-1], carry)
+    for i in range(n-1, 0, -1):
+        CNOT | (a[i], b[i])
+        Toffoli_gate(eng, b[i-1], a[i-1], a[i])
+    for i in range(1, n-1):
+        CNOT | (a[i], a[i+1])
+    for i in range(n):
+        CNOT | (a[i], b[i])
+
 def CDKM_no_modular(eng, a, b, c, z, n):
     for i in range(1, n):
         CNOT | (a[i], b[i])
@@ -210,7 +227,9 @@ def adder_test(eng):
     ancilla = eng.allocate_qubit()
     z = eng.allocate_qubit()
 
-    CDKM_no_modular(eng, s, k, ancilla,z, n)
+    #CDKM_no_modular(eng, s, k, ancilla,z, n)
+
+    Unb_fan_out_adder(eng, s, k, ancilla, n)
 
 '''
 resource_check = 0

@@ -4,6 +4,7 @@ in https://arxiv.org/pdf/quant-ph/0410184.pdf
 """
 
 import cirq
+from adder.gidney import logical_and, logical_and_reverse
 from mathematics.recycled_gate import RecycledGate
 
 #Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
@@ -36,7 +37,7 @@ class Adder:
 
     def construct_circuit1(self):
         op = []
-        op.append(cirq.TOFFOLI(self.B[0],self.A[0],self.Z))
+        op.append(logical_and(self.B[0],self.A[0],self.Z))
         op.append(cirq.CNOT(self.A[0],self.B[0]))
 
         result = []
@@ -54,7 +55,7 @@ class Adder:
         op.append(cirq.CNOT(self.A[1],self.C))
         op.append(cirq.TOFFOLI(self.B[0],self.A[0],self.C))
         op.append(cirq.CNOT(self.A[1],self.Z))
-        op.append(cirq.TOFFOLI(self.C,self.B[1],self.Z))
+        op.append(logical_and(self.C,self.B[1],self.Z))
         op.append(cirq.CNOT(self.C,self.B[1]))
         op.append(cirq.TOFFOLI(self.B[0],self.A[0],self.C))
         op.append(cirq.CNOT(self.A[0], self.B[0]))
@@ -81,7 +82,7 @@ class Adder:
         op.append(cirq.TOFFOLI(self.C,self.B[1],self.A[1]))
         op.append(cirq.CNOT(self.A[2],self.Z))
         op.append(cirq.X(self.B[1]))
-        op.append(cirq.TOFFOLI(self.A[1],self.B[2],self.Z))
+        op.append(logical_and(self.A[1],self.B[2],self.Z))
         op.append(cirq.CNOT(self.C, self.B[1]))
         op.append(cirq.CNOT(self.A[1], self.B[2]))
         op.append(cirq.TOFFOLI(self.C, self.B[1], self.A[1]))

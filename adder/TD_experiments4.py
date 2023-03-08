@@ -4,6 +4,7 @@ import utils.counting_utils as cu
 from qramcircuits.toffoli_decomposition import *
 import adder.gidney as gidney
 import adder.cuccaro as cuccaro
+import adder.cuccaro_2CNOT as cuccaro_2CNOT
 import adder.inDraper as inDraper
 import adder.outDraper as outDraper
 import adder.takahashi as takahashi
@@ -121,7 +122,7 @@ for nnn in range(2,11):
 
     s = cirq.Simulator()
     #circuit=add(a,b,n, outDraper.Adder)
-    circuit=maxsub2(a,b,n, cuccaro.Adder)
+    circuit=maxsub2(a,b,n, outDraper.Adder)
     TD_circuit = cirq.Circuit(
         ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_B))
     #results = s.simulate(circuit)

@@ -157,7 +157,7 @@ for nnn in range(2,11):
     FOUR_ANCILLA_TDEPTH_1_B
     '''
     #results = s.simulate(circuit)
-    print(TD_circuit)
+    #print(TD_circuit)
     #print(circuit)
     #output = results.measurements['result']
     #print(output[::-1])
