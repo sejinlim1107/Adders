@@ -48,7 +48,6 @@ def Craig_Gidney_adder(nr_qubits,c0,aaa,bbb):
     print("Qubit-count=", len(ct.all_qubits()))  # 3n-1
     print("T-depth= ", count_t_depth_of_circuit(ct)) #2n-2
     print("T-count= ", count_t_of_circuit(ct))  # 4n-4
-    print(f"Full_depth : {int(count_full_depth_of_circuit(ct))}")
 
     #'''
 '''

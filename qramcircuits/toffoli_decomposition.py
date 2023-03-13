@@ -537,32 +537,17 @@ class ToffoliDecomposition():
         elif self.decomp_type == ToffoliDecompType.ZERO_ANCILLA_CNOT_4:
             moments = [
                 cirq.H(self.target_qubit),
-                cirq.CNOT(self.qubits[1], self.target_qubit),
-                cirq.T(self.target_qubit) ** -1,
-                cirq.CNOT(self.qubits[0], self.target_qubit),
                 cirq.T(self.target_qubit),
                 cirq.CNOT(self.qubits[1], self.target_qubit),
                 cirq.T(self.target_qubit) ** -1,
                 cirq.CNOT(self.qubits[0], self.target_qubit),
                 cirq.T(self.target_qubit),
+                cirq.CNOT(self.qubits[1], self.target_qubit),
+                cirq.T(self.target_qubit) ** -1,
+                cirq.CNOT(self.qubits[0], self.target_qubit),
                 cirq.H(self.target_qubit)
             ]
 
-        elif self.decomp_type == ToffoliDecompType.ZERO_ANCILLA_CNOT_4_INV:
-            moments = [
-                cirq.H(self.target_qubit),
-                cirq.T(self.target_qubit) ** -1,
-                cirq.CNOT(self.qubits[0], self.target_qubit),
-                cirq.T(self.target_qubit),
-                cirq.CNOT(self.qubits[1], self.target_qubit),
-                cirq.T(self.target_qubit) ** -1,
-                cirq.CNOT(self.qubits[0], self.target_qubit),
-                cirq.T(self.target_qubit),
-                cirq.CNOT(self.qubits[1], self.target_qubit),
-                cirq.H(self.target_qubit)
-            ]
-
-            return moments
         else:
             print("decomposition type must be a valid ToffoliDecompType")
 

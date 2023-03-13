@@ -3,8 +3,6 @@
 """
 import cirq
 
-#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
-
 class Adder:
 
     def __init__(self, A, B):
@@ -25,15 +23,15 @@ class Adder:
         op.append(cirq.TOFFOLI(self.A[0], self.B[0], self.Z))
         op.append(cirq.CNOT(self.A[0], self.B[0]))
 
-        #circuit = cirq.Circuit()
-        #circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         result = []
         for k in self.B:
             result.append(k)
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
     def construct_circuit(self):
         n = len(self.A)
@@ -55,7 +53,9 @@ class Adder:
         result = []
         for k in self.B:
             result.append(k)
-        result.append(self.Z) # if ancillae != None <-- 이 값에 따라 ancillae가 달라짐
-                                     # 일단 예제에서 다 None으로 설정되어있음
+        result.append(self.Z)
 
-        return op, result
+        circuit = cirq.Circuit()
+        circuit.append(op)
+
+        return circuit, result

@@ -4,6 +4,7 @@ import utils.counting_utils as cu
 from qramcircuits.toffoli_decomposition import *
 import adder.gidney as gidney
 import adder.cuccaro as cuccaro
+import adder.cuccaro_2CNOT as cuccaro_2CNOT
 import adder.inDraper as inDraper
 import adder.outDraper as outDraper
 import adder.takahashi as takahashi
@@ -24,7 +25,8 @@ def add(a, b, n, Adder,t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
+
     if rctr != 1:
         circuit.append(cirq.measure(adder.result, key="result"))
 
@@ -46,7 +48,7 @@ def sub1(a, b, n, Adder, t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
 
     circuit.append(cirq.X(adder.result[i]) for i in range(n))
     circuit.append(cirq.measure(adder.result, key="result"))
@@ -71,7 +73,7 @@ def maxsub1(a, b, n, Adder,t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
 
     circuit.append(cirq.X(adder.result[i]) for i in range(n+1))
     maxancilla = [cirq.NamedQubit("max" + str(i)) for i in range(n+1)]
@@ -100,7 +102,7 @@ def maxsub2(a, b, n, Adder,t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
 
     circuit.append(cirq.X(adder.result[i]) for i in range(n+1))
     maxancilla = [cirq.NamedQubit("max" + str(i)) for i in range(n+1)]
@@ -114,31 +116,28 @@ def maxsub2(a, b, n, Adder,t=-1):
     return circuit
 
 rctr = 1
-n=5
-a=0b1111
-b=0b1111
+for nnn in range(2,11):
+    n=nnn
+    a=0b00000000000
+    b=0b11111111111
 
-s = cirq.Simulator()
-circuit=add(a,b,n, outDraper.Adder)
-#circuit=maxsub1(a,b,n, gidney.Adder)
-results = s.simulate(circuit)
-print(circuit)
-print("here")
-print(circuit.moments)
-#output = results.measurements['result']
-#print(output[::-1])
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
+    s = cirq.Simulator()
+    #circuit=add(a,b,n, outDraper.Adder)
+    circuit=maxsub1(a,b,n, outDraper.Adder)
+    TD_circuit = cirq.Circuit(
+        ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.ZERO_ANCILLA_CNOT_4))
+    #results = s.simulate(circuit)
+    #print(circuit)
+    #print(TD_circuit)
+    #output = results.measurements['result']
+    #print(output[::-1])
+    print(f"{int(cu.count_t_of_circuit(TD_circuit))},{int(cu.count_t_depth_of_circuit(TD_circuit))},{int(cu.count_cnot_of_circuit(TD_circuit))},{int(cirq.num_qubits(TD_circuit))},{int(cu.count_full_depth_of_circuit(TD_circuit))}")
+    #print(f"Qubit_count : ")
 
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))},{int(cu.count_t_depth_of_circuit(circuit))},{int(cirq.num_qubits(circuit))},{int(cu.count_full_depth_of_circuit(circuit))}")
-print(f"T_depth : ")
-print(f"Qubit_count : ")
-print(f"Full_depth : ")
-
-'''
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-'''
+    '''
+    print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(TD_circuit))}")
+    print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(TD_circuit))}")
+    print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
+    print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
+    '''
 

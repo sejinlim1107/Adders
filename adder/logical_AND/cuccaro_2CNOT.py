@@ -4,9 +4,6 @@ in https://arxiv.org/pdf/quant-ph/0410184.pdf
 """
 
 import cirq
-from mathematics.recycled_gate import RecycledGate
-
-#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
 
 class Adder:
 
@@ -63,8 +60,8 @@ class Adder:
 
             op += self.UMA_2cnot_gate(qubit_a,qubit_b,qubit_c)
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         # measure
         result = []
@@ -72,4 +69,4 @@ class Adder:
             result.append(k)
         result.append(self.Z)
 
-        return op, result
+        return circuit, result

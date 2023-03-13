@@ -7,8 +7,6 @@
 import cirq
 import math as mt
 
-#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
-
 class Adder:
     # in-place
     def __init__(self, A, B):
@@ -137,7 +135,7 @@ class Adder:
           Computation part of the circuit
         """
         init_comp, p_round_comp, g_round_comp, c_round_comp, last_round, p_round_uncomp, g_round_uncomp, c_round_uncomp, ancilla = self.construct_rounds()
-        circuit = [] #cirq.Circuit()
+        circuit = cirq.Circuit()
         # Init
         circuit += init_comp
 

@@ -4,10 +4,6 @@ in https://arxiv.org/pdf/quant-ph/0410184.pdf
 """
 
 import cirq
-from adder.gidney import logical_and, logical_and_reverse
-from mathematics.recycled_gate import RecycledGate
-
-#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
 
 class Adder:
 
@@ -37,17 +33,17 @@ class Adder:
 
     def construct_circuit1(self):
         op = []
-        op.append(logical_and(self.B[0],self.A[0],self.Z))
+        op.append(cirq.TOFFOLI(self.B[0],self.A[0],self.Z))
         op.append(cirq.CNOT(self.A[0],self.B[0]))
 
         result = []
         result.append(self.B[0])
         result.append(self.Z)
 
-        #circuit = cirq.Circuit()
-        #circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
-        return op, result
+        return circuit, result
 
     def construct_circuit2(self):
         op = []
@@ -55,22 +51,22 @@ class Adder:
         op.append(cirq.CNOT(self.A[1],self.C))
         op.append(cirq.TOFFOLI(self.B[0],self.A[0],self.C))
         op.append(cirq.CNOT(self.A[1],self.Z))
-        op.append(logical_and(self.C,self.B[1],self.Z))
+        op.append(cirq.TOFFOLI(self.C,self.B[1],self.Z))
         op.append(cirq.CNOT(self.C,self.B[1]))
         op.append(cirq.TOFFOLI(self.B[0],self.A[0],self.C))
         op.append(cirq.CNOT(self.A[0], self.B[0]))
         op.append(cirq.CNOT(self.A[1], self.C))
         op.append(cirq.CNOT(self.A[1], self.B[1]))
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         result = []
         result.append(self.B[0])
         result.append(self.B[1])
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
     def construct_circuit3(self):
         op = []
@@ -82,7 +78,7 @@ class Adder:
         op.append(cirq.TOFFOLI(self.C,self.B[1],self.A[1]))
         op.append(cirq.CNOT(self.A[2],self.Z))
         op.append(cirq.X(self.B[1]))
-        op.append(logical_and(self.A[1],self.B[2],self.Z))
+        op.append(cirq.TOFFOLI(self.A[1],self.B[2],self.Z))
         op.append(cirq.CNOT(self.C, self.B[1]))
         op.append(cirq.CNOT(self.A[1], self.B[2]))
         op.append(cirq.TOFFOLI(self.C, self.B[1], self.A[1]))
@@ -94,8 +90,8 @@ class Adder:
         op.append(cirq.CNOT(self.A[0], self.B[0]))
         op.append(cirq.CNOT(self.A[1], self.B[1]))
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         result = []
         result.append(self.B[0])
@@ -103,7 +99,7 @@ class Adder:
         result.append(self.B[2])
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
     '''
     def MAJ_gate(self, a, b, c):
@@ -172,8 +168,8 @@ class Adder:
 
         op.append(cirq.CNOT(self.A[i],self.B[i]) for i in range(n))
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         # measure
         result = []
@@ -181,8 +177,9 @@ class Adder:
             result.append(k)
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
+    '''
     def construct_circuit_2cnot(self):
         n = len(self.A)
         op = []
@@ -207,8 +204,8 @@ class Adder:
 
             op += self.UMA_2cnot_gate(qubit_a,qubit_b,qubit_c)
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         # measure
         result = []
@@ -216,4 +213,5 @@ class Adder:
             result.append(k)
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
+    '''

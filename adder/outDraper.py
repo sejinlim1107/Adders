@@ -7,8 +7,6 @@
 import cirq
 import math as mt
 
-#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
-
 class Adder:
     # out of place
     def __init__(self, A, B):
@@ -45,6 +43,7 @@ class Adder:
             init.append(cirq.CNOT(self.A[i], self.B[i]))
 
         # P-round
+        print("P-round")
         idx = 0  # ancilla idx
         tmp = 0 # m=1일 때 idx 저장해두기
         for t in range(1, int(mt.log2(n))):
@@ -54,6 +53,7 @@ class Adder:
                     p_round.append(cirq.TOFFOLI(self.B[2*m], self.B[2*m+1], ancilla[idx]))
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     p_round.append(cirq.TOFFOLI(ancilla[pre-1+2*m], ancilla[pre-1+2*m+1], ancilla[idx]))
+                    print(idx)
                     # p_round.append(cirq.TOFFOLI(ancilla[idx-self.l(n,t-1)+2*m], ancilla[idx-self.l(n,t-1)+2*m+1], ancilla[idx]))
                     # 이건 절대적 위치 계산한 식임. 이것도 제대로 동작하긴 함.
                 if m==1:
@@ -62,6 +62,7 @@ class Adder:
 
 
         # G-round
+        print("G-round")
         pre = -1 # 맨처음엔 이전자리가 없으니까
         idx = -1 # ancilla idx
         for t in range(1, int(mt.log2(n))+1):
@@ -71,10 +72,12 @@ class Adder:
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
                     idx = pre+2*m+1
                     g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], ancilla[idx], self.Z[int(mt.pow(2, t)*(m+1))]))
+                    print(idx)
             pre = idx # t-1의 맨마지막
 
         # C-round
         # 이거 순서대로 담고 마지막에 뒤집어도 될 듯
+        print("C-round")
         for t in range(int(mt.log2(2*n/3)),0,-1):
             idx = len(ancilla) - 1 - (self.l((n - pow(2, t - 1)), t) + self.l((n - pow(2, t - 2)),t - 1))  # 현재 접근하고자하는 P의 시작 index -1.
             for m in range(1,self.l((n-pow(2,t-1)), t)+1):
@@ -82,7 +85,8 @@ class Adder:
                     c_round.append(
                         cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], self.B[2 * m], self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
                 else:
-                    c_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], ancilla[idx+2*m],self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
+                    c_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], ancilla[idx+1+2*m],self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
+                    print(idx+1+2*m)
 
 
         # Last round
@@ -102,7 +106,7 @@ class Adder:
         """
         init_comp, p_round_comp, g_round_comp, c_round_comp, last_round = self.construct_rounds()
 
-        circuit = [] #cirq.Circuit()
+        circuit = cirq.Circuit()
 
         # Init
         circuit += init_comp

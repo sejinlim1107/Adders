@@ -25,7 +25,7 @@ def add(a, b, n, Adder,t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
     if rctr != 1:
         circuit.append(cirq.measure(adder.result, key="result"))
 
@@ -47,7 +47,7 @@ def sub1(a, b, n, Adder, t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
 
     circuit.append(cirq.X(adder.result[i]) for i in range(n))
     circuit.append(cirq.measure(adder.result, key="result"))
@@ -72,7 +72,7 @@ def maxsub1(a, b, n, Adder,t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
 
     circuit.append(cirq.X(adder.result[i]) for i in range(n+1))
     maxancilla = [cirq.NamedQubit("max" + str(i)) for i in range(n+1)]
@@ -101,7 +101,7 @@ def maxsub2(a, b, n, Adder,t=-1):
         adder = Adder(A, B)
     else:
         adder = Adder(A, B, t)
-    circuit.append(adder.circuit)
+    circuit.append(adder.circuit.moments)
 
     circuit.append(cirq.X(adder.result[i]) for i in range(n+1))
     maxancilla = [cirq.NamedQubit("max" + str(i)) for i in range(n+1)]
@@ -123,7 +123,7 @@ for nnn in range(2,11):
 
     s = cirq.Simulator()
     #circuit=add(a,b,n, outDraper.Adder)
-    circuit=maxsub2(a,b,n, outDraper.Adder)
+    circuit=maxsub1(a,b,n, outDraper.Adder)
     TD_circuit = cirq.Circuit(
         ToffoliDecomposition.construct_decomposed_moments(circuit.moments, ToffoliDecompType.FOUR_ANCILLA_TDEPTH_1_A))
     #results = s.simulate(circuit)
@@ -131,7 +131,8 @@ for nnn in range(2,11):
     #print(TD_circuit)
     #output = results.measurements['result']
     #print(output[::-1])
-    print(f"{int(cu.count_t_of_circuit(TD_circuit))},{int(cu.count_t_depth_of_circuit(TD_circuit))},{int(cirq.num_qubits(TD_circuit))},{int(cu.count_full_depth_of_circuit(TD_circuit))}")
+    print(f"{int(cu.count_t_of_circuit(TD_circuit))},{int(cu.count_t_depth_of_circuit(TD_circuit))},{int(cu.count_cnot_of_circuit(TD_circuit))},{int(cirq.num_qubits(TD_circuit))},{int(cu.count_full_depth_of_circuit(TD_circuit))}")
+
     #print(f"T_depth : ")
     #print(f"Qubit_count : ")
     #print(f"Full_depth : ")

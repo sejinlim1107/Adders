@@ -53,7 +53,6 @@ def count_cnot_of_circuit(circuit):
 def count_toffoli_of_circuit(circuit):
     return count_ops(circuit, [cirq.TOFFOLI])
 
-
 def count_full_depth_of_circuit(circuit):
     full_depth = 0
     for moment in circuit:

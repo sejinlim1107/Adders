@@ -4,9 +4,6 @@ in https://arxiv.org/pdf/quant-ph/0410184.pdf
 """
 
 import cirq
-from mathematics.recycled_gate import RecycledGate
-
-#Circuit return 안하게 수정했음 (circuit 여러번 호출하면 addertest에서 병렬처리가 안됨)
 
 class Adder:
 
@@ -43,10 +40,10 @@ class Adder:
         result.append(self.B[0])
         result.append(self.Z)
 
-        #circuit = cirq.Circuit()
-        #circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
-        return op, result
+        return circuit, result
 
     def construct_circuit2(self):
         op = []
@@ -61,15 +58,15 @@ class Adder:
         op.append(cirq.CNOT(self.A[1], self.C))
         op.append(cirq.CNOT(self.A[1], self.B[1]))
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         result = []
         result.append(self.B[0])
         result.append(self.B[1])
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
     def construct_circuit3(self):
         op = []
@@ -93,8 +90,8 @@ class Adder:
         op.append(cirq.CNOT(self.A[0], self.B[0]))
         op.append(cirq.CNOT(self.A[1], self.B[1]))
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         result = []
         result.append(self.B[0])
@@ -102,7 +99,7 @@ class Adder:
         result.append(self.B[2])
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
     '''
     def MAJ_gate(self, a, b, c):
@@ -171,8 +168,8 @@ class Adder:
 
         op.append(cirq.CNOT(self.A[i],self.B[i]) for i in range(n))
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         # measure
         result = []
@@ -180,8 +177,9 @@ class Adder:
             result.append(k)
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
 
+    '''
     def construct_circuit_2cnot(self):
         n = len(self.A)
         op = []
@@ -206,8 +204,8 @@ class Adder:
 
             op += self.UMA_2cnot_gate(qubit_a,qubit_b,qubit_c)
 
-        # circuit = cirq.Circuit()
-        # circuit.append(op)
+        circuit = cirq.Circuit()
+        circuit.append(op)
 
         # measure
         result = []
@@ -215,4 +213,5 @@ class Adder:
             result.append(k)
         result.append(self.Z)
 
-        return op, result
+        return circuit, result
+    '''
