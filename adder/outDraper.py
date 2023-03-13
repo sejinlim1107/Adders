@@ -5,7 +5,7 @@
   A logarithmic-depth quantum carry-lookahead adder
 """
 import cirq
-import math as mt
+from math import floor, log2
 
 class Adder:
     # out of place
@@ -20,19 +20,21 @@ class Adder:
         self.circuit, self.result = self.construct_circuit()
 
     def w(self, n):
-        return n - sum(int(mt.floor(n / (mt.pow(2, i)))) for i in range(1, int(mt.log2(n)) + 1))
+        return n - sum(int(floor(n / (pow(2, i)))) for i in range(1, int(log2(n)) + 1))
 
     def l(self, n, t):
-        return int(mt.floor(n / (mt.pow(2, t))))
+        return int(floor(n / (pow(2, t))))
 
-    def construct_rounds(self):
+    def construct_circuit(self):
         n = len(self.A)
         init = []
         p_round = []
         g_round = []
         c_round = []
+        p_round_uncom = []
 
-        length = n - self.w(n) - mt.floor(mt.log2(n))
+
+        length = n - self.w(n) - floor(log2(n))
         ancilla = [cirq.NamedQubit("a" + str(i)) for i in range(length)]  # 논문에서 X라 지칭
 
         # Init round
@@ -43,50 +45,78 @@ class Adder:
             init.append(cirq.CNOT(self.A[i], self.B[i]))
 
         # P-round
-        print("P-round")
+        #print("P-round")
         idx = 0  # ancilla idx
         tmp = 0 # m=1일 때 idx 저장해두기
-        for t in range(1, int(mt.log2(n))):
+        for t in range(1, int(log2(n))):
             pre = tmp  # (t-1)일 때의 첫번째 자리 저장
             for m in range(1, self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
+                    # print(2*m,2*m+1,idx)
                     p_round.append(cirq.TOFFOLI(self.B[2*m], self.B[2*m+1], ancilla[idx]))
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
+                    # print(pre - 1 + 2 * m,pre - 1 + 2 * m + 1,idx)
                     p_round.append(cirq.TOFFOLI(ancilla[pre-1+2*m], ancilla[pre-1+2*m+1], ancilla[idx]))
-                    print(idx)
-                    # p_round.append(cirq.TOFFOLI(ancilla[idx-self.l(n,t-1)+2*m], ancilla[idx-self.l(n,t-1)+2*m+1], ancilla[idx]))
-                    # 이건 절대적 위치 계산한 식임. 이것도 제대로 동작하긴 함.
                 if m==1:
                     tmp = idx
                 idx += 1
 
 
         # G-round
-        print("G-round")
-        pre = -1 # 맨처음엔 이전자리가 없으니까
-        idx = -1 # ancilla idx
-        for t in range(1, int(mt.log2(n))+1):
+        #print("G-round")
+        pre = 0  # The number of cumulative p(t-1)
+        idx = 0  # ancilla idx
+        for t in range(1, int(log2(n))+1):
             for m in range(self.l(n, t)):
                 if t == 1: # B에 저장되어있는 애들로만 연산 가능
-                    g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], self.B[2 * m + 1], self.Z[int(mt.pow(2, t)*(m+1))]))
+                    # print(int(pow(2, t) * m + pow(2, t - 1)), 2*m+1, int(pow(2, t) * (m + 1)))
+                    g_round.append(cirq.TOFFOLI(self.Z[int(pow(2, t)*m + pow(2, t-1))], self.B[2 * m + 1], self.Z[int(pow(2, t)*(m+1))]))
                 else: # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
-                    idx = pre+2*m+1
-                    g_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t)*m + mt.pow(2, t-1))], ancilla[idx], self.Z[int(mt.pow(2, t)*(m+1))]))
-                    print(idx)
-            pre = idx # t-1의 맨마지막
+                    #print(int(pow(2, t) * m + pow(2, t - 1)), idx+2*m, int(pow(2, t) * (m + 1)))
+                    g_round.append(cirq.TOFFOLI(self.Z[int(pow(2, t)*m + pow(2, t-1))], ancilla[idx+2*m], self.Z[int(pow(2, t)*(m+1))]))
+            if t != 1:
+                pre = pre + self.l(n, t - 1) - 1
+                idx = pre
 
         # C-round
-        # 이거 순서대로 담고 마지막에 뒤집어도 될 듯
-        print("C-round")
-        for t in range(int(mt.log2(2*n/3)),0,-1):
-            idx = len(ancilla) - 1 - (self.l((n - pow(2, t - 1)), t) + self.l((n - pow(2, t - 2)),t - 1))  # 현재 접근하고자하는 P의 시작 index -1.
+        #print("C-round")
+        if int(log2(n)) - 1 == int(log2(2 * n / 3)):  # p(t-1)까지 접근함
+            iter = self.l(n, int(log2(n)) - 1) - 1  # 마지막 pt의 개수
+        else:  # p(t)까지 접근함
+            iter = 0
+        pre = 0  # (t-1)일 때의 첫번째 idx
+        for t in range(int(log2(2*n/3)),0,-1):
             for m in range(1,self.l((n-pow(2,t-1)), t)+1):
                 if t == 1:  # B에 저장되어있는 애들로만 연산 가능
+                    # print(int(pow(2, t) * m), 2*m, int(pow(2, t) * m + pow(2, t - 1)))
                     c_round.append(
-                        cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], self.B[2 * m], self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
+                        cirq.TOFFOLI(self.Z[int(pow(2, t) * m)], self.B[2 * m], self.Z[int(pow(2, t) * m + pow(2, t - 1))]))
                 else:
-                    c_round.append(cirq.TOFFOLI(self.Z[int(mt.pow(2, t) * m)], ancilla[idx+1+2*m],self.Z[int(mt.pow(2, t) * m + mt.pow(2, t - 1))]))
-                    print(idx+1+2*m)
+                    if m == 1:
+                        iter += self.l(n, t - 1) - 1
+                        pre = length - 1 - iter
+                    # print(int(pow(2, t) * m),pre + 2 * m,int(pow(2, t) * m + pow(2, t-1)))
+                    c_round.append(cirq.TOFFOLI(self.Z[int(pow(2, t) * m)], ancilla[pre + 2 * m],self.Z[int(pow(2, t) * m + pow(2, t - 1))]))
+
+        # P-inverse round
+        # print("P-inv-rounds")
+        pre = 0  # (t-1)일 때의 첫번째 idx
+        iter = self.l(n, int(log2(n)) - 1) - 1  # 마지막 pt의 개수
+        iter2 = 0  # for idx
+        idx = 0
+        for t in reversed(range(1, int(log2(n)))):
+            for m in range(1, self.l(n, t)):
+                if t == 1:  # B에 저장되어있는 애들로만 연산 가능
+                    # print(2*m,2*m+1,m-t)
+                    p_round_uncom.append(cirq.TOFFOLI(self.B[2 * m], self.B[2 * m + 1], ancilla[m - t]))
+                else:  # t가 1보다 클 때는 ancilla에 저장된 애들도 이용해야함
+                    if m == 1:
+                        iter += self.l(n, t - 1) - 1  # p(t-1) last idx
+                        pre = length - iter
+                        iter2 += (self.l(n, t) - 1)
+                        idx = length - iter2
+                    # print(pre - 1 + 2 * m,pre - 1 + 2 * m + 1,idx-1+m)
+                    p_round_uncom.append(cirq.TOFFOLI(ancilla[pre - 1 + 2 * m], ancilla[pre - 1 + 2 * m + 1], ancilla[idx - 1 + m]))
 
 
         # Last round
@@ -94,34 +124,22 @@ class Adder:
         last_round += [cirq.CNOT(self.A[0], self.Z[0])]
         last_round += [cirq.CNOT(self.A[i], self.B[i]) for i in range(1, n)]
 
-        return init, p_round, g_round, c_round, last_round
-
-    def construct_circuit(self):
-        """
-          returns the CLA circuit
-        """
-
-        """
-          Computation part of the circuit
-        """
-        init_comp, p_round_comp, g_round_comp, c_round_comp, last_round = self.construct_rounds()
-
         circuit = cirq.Circuit()
 
         # Init
-        circuit += init_comp
+        circuit += init
 
         # P-round
-        circuit += p_round_comp
+        circuit += p_round
 
         # G-round
-        circuit += g_round_comp
+        circuit += g_round
 
         # C-round
-        circuit += c_round_comp
+        circuit += c_round
 
         # P-inverse
-        circuit += p_round_comp[::-1]
+        circuit += p_round_uncom
 
         # Last round
         circuit += last_round
@@ -131,5 +149,4 @@ class Adder:
         for k in self.Z:
             result.append(k)
 
-        # print(circuit)
         return circuit, result

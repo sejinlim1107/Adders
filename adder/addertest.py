@@ -200,24 +200,25 @@ print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
 '''
 
 n=7
-a=0b111111
-b=0b111111
+a=0b1111111
+b=0b1111111
 
-rctr = 1 # 자원측정 모드
+rctr = 0 # 자원측정 모드
 s = cirq.Simulator()
 #circuit=maxsub2(a,b,n, gidney.Adder)
-circuit=add(a,b,n, cuccaro_2CNOT.Adder)
-#results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
+circuit=add(a,b,n, inDraper.Adder)
+results = s.simulate(circuit) # 시뮬레이터를 안돌리면 n 무한 확장 가능
 print(circuit)
-#output = results.measurements['result']
-#print(output[::-1])
-print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
-print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
-print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
-print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
-print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
-print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
-print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
-print(f"Full_depth : {int(len(cirq.Circuit(circuit.all_operations())))}")
+output = results.measurements['result']
+print(output[::-1])
+
+# print(f"T_count : {int(cu.count_t_of_circuit(circuit))}")
+# print(f"T_depth : {int(cu.count_t_depth_of_circuit(circuit))}")
+# print(f"Toffoli_depth : {int(cu.count_toffoli_depth_of_circuit(circuit))}")
+# print(f"Toffoli_count : {int(cu.count_toffoli_of_circuit(circuit))}")
+# print(f"CNOT_count : {int(cu.count_cnot_of_circuit(circuit))}")
+# print(f"H_count : {int(cu.count_h_of_circuit(circuit))}")
+# print(f"Qubit_count : {int(cirq.num_qubits(circuit))}")
+# print(f"Full_depth : {int(len(cirq.Circuit(circuit.all_operations())))}")
 
 
